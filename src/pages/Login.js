@@ -15,17 +15,22 @@ class Login extends React.Component {
     this.setState({ [target.name]: target.value });
   }
 
-  btnEnabled = () => {
+  loginBtnEnabled = () => {
     const { name, email } = this.state;
     if (name.length > 0 && email.length > 0) return false;
     return true;
   }
 
-  btnClick = async () => {
+  loginBtnClick = async () => {
     const { history } = this.props;
     const token = await getToken();
     localStorage.setItem('token', token);
     history.push('/game');
+  }
+
+  settingsBtnClick = () => {
+    const { history } = this.props;
+    history.push('/settings');
   }
 
   render() {
@@ -51,10 +56,17 @@ class Login extends React.Component {
         <button
           type="button"
           data-testid="btn-play"
-          disabled={ this.btnEnabled() }
-          onClick={ this.btnClick }
+          disabled={ this.loginBtnEnabled() }
+          onClick={ this.loginBtnClick }
         >
           Play
+        </button>
+        <button
+          type="button"
+          data-testid="btn-settings"
+          onClick={ this.settingsBtnClick }
+        >
+          Settings
         </button>
       </form>
     );

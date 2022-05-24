@@ -3,7 +3,7 @@ import React from 'react';
 class Game extends React.Component {
   render() {
     return (
-      <hi>Game</hi>
+      <h1>Game</h1>
     );
   }
 }
