@@ -1,4 +1,6 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import getToken from '../services/triviaToken';
 
 class Login extends React.Component {
   constructor() {
@@ -17,6 +19,13 @@ class Login extends React.Component {
     const { name, email } = this.state;
     if (name.length > 0 && email.length > 0) return false;
     return true;
+  }
+
+  btnClick = async () => {
+    const { history } = this.props;
+    const token = await getToken();
+    localStorage.setItem('token', token);
+    history.push('/game');
   }
 
   render() {
@@ -43,6 +52,7 @@ class Login extends React.Component {
           type="button"
           data-testid="btn-play"
           disabled={ this.btnEnabled() }
+          onClick={ this.btnClick }
         >
           Play
         </button>
@@ -52,3 +62,7 @@ class Login extends React.Component {
 }
 
 export default Login;
+
+Login.propTypes = {
+  history: PropTypes.arrayOf.isRequired,
+};
