@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import getAsk from '../services/getAsk';
+import Header from '../component/Header';
 
 class Game extends React.Component {
   constructor() {
@@ -61,6 +62,7 @@ class Game extends React.Component {
     const { trivia, index } = this.state;
     return (
       <div>
+        <Header />
         <h1>Game</h1>
         { trivia.length !== 0 && (
           <div>
@@ -73,9 +75,7 @@ class Game extends React.Component {
             </div>
           </div>
         ) }
-
       </div>
-
     );
   }
 }
