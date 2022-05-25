@@ -1,9 +1,9 @@
-// export const addTrip = (trip) => ({
-//   type: 'ADD_TRIP',
-//   payload: trip,
-// });
+export const addTest = (test) => ({
+  type: 'ADD_TEST',
+  payload: test,
+});
 
-// const addCurrencies = (currencies) => ({
-//   type: 'ADD_CURRENCIES',
-//   payload: currencies,
-// });
+export const addUser = (user) => ({
+  type: 'ADD_USER',
+  payload: user,
+});
