@@ -1,13 +1,15 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import getToken from '../services/triviaToken';
+import { addUser } from '../redux/actions';
 
 class Login extends React.Component {
   constructor() {
     super();
     this.state = {
       name: '',
-      email: '',
+      gravatarEmail: '',
     };
   }
 
@@ -16,15 +18,16 @@ class Login extends React.Component {
   }
 
   loginBtnEnabled = () => {
-    const { name, email } = this.state;
-    if (name.length > 0 && email.length > 0) return false;
+    const { name, gravatarEmail } = this.state;
+    if (name.length > 0 && gravatarEmail.length > 0) return false;
     return true;
   }
 
   loginBtnClick = async () => {
-    const { history } = this.props;
+    const { history, dispatch } = this.props;
     const token = await getToken();
     localStorage.setItem('token', token);
+    dispatch(addUser(this.state));
     history.push('/game');
   }
 
@@ -34,7 +37,7 @@ class Login extends React.Component {
   }
 
   render() {
-    const { name, email } = this.state;
+    const { name, gravatarEmail } = this.state;
     return (
       <form>
         <input
@@ -48,9 +51,9 @@ class Login extends React.Component {
         <input
           placeholder="email"
           type="text"
-          name="email"
+          name="gravatarEmail"
           data-testid="input-gravatar-email"
-          value={ email }
+          value={ gravatarEmail }
           onChange={ this.handleChange }
         />
         <button
@@ -73,8 +76,10 @@ class Login extends React.Component {
   }
 }
 
-export default Login;
+export default connect()(Login);
 
 Login.propTypes = {
   history: PropTypes.arrayOf.isRequired,
+  dispatch: PropTypes.func.isRequired,
+
 };
