@@ -31,12 +31,9 @@ class Game extends React.Component {
   answers() {
     const { trivia, index } = this.state;
     const max = trivia[index].incorrect_answers.length;
-    console.log(trivia[index].incorrect_answers);
-    console.log(max);
     const correct = Math.floor(Math.random() * (max - 0 + 1) + 0);
     const answers = trivia[index].incorrect_answers;
     answers.splice(correct, 0, trivia[index].correct_answer);
-    console.log(answers);
     return (
       answers.map((answer, i) => (
         <button
