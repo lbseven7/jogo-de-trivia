@@ -60,7 +60,6 @@ class Game extends React.Component {
     return (
       <div>
         <Header />
-        <h1>Game</h1>
         { trivia.length !== 0 && (
           <div>
             <p data-testid="question-text">{ trivia[index].question }</p>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import renderWithRouterAndRedux from './helpers/renderWithRouterAndRedux';
 import App from '../App';
@@ -37,15 +37,16 @@ describe('1) Tests Login Page:', () => {
     expect(history.location.pathname).toBe('/settings');
   });
   it('play button redirects to /game', async () => {
-    const { history } = renderWithRouterAndRedux(<App />);
+    const { history, debug } = renderWithRouterAndRedux(<App />);
     const playBtn = screen.getByRole('button', { name: /play/i });
     const nameInput = screen.getByPlaceholderText('nome');
     const emailInput = screen.getByPlaceholderText('email');
     userEvent.type(nameInput, 'Rafael');
     userEvent.type(emailInput, 'rafael@teste.com');
     userEvent.click(playBtn);
-    const game = await screen.findByRole('heading', {level: 1, text: /game/i})
-    expect(game).toBeInTheDocument()
+    const game = await screen.findByRole('img', {  name: /gravatar/i})
+    expect(game).toBeInTheDocument();
     expect(history.location.pathname).toBe('/game');
+    debug()
   });
 });
