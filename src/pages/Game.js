@@ -27,6 +27,36 @@ class Game extends React.Component {
     }
   }
 
+  answers() {
+    const { trivia, index } = this.state;
+    const max = trivia[index].incorrect_answers.length;
+    console.log(trivia[index].incorrect_answers);
+    console.log(max);
+    const correct = Math.floor(Math.random() * (max - 0 + 1) + 0);
+    const answers = trivia[index].incorrect_answers;
+    answers.splice(correct, 0, trivia[index].correct_answer);
+    console.log(answers);
+    return (
+      answers.map((answer, i) => (
+        <button
+          key={ i }
+          type="button"
+          data-testid={ this.dataTestAnswer(i, correct) }
+        >
+          { answer }
+        </button>
+      ))
+    );
+  }
+
+  dataTestAnswer(i, correct) {
+    if (i === correct) {
+      return 'correct-answer';
+    } if (i > correct) {
+      return `wrong-answer-${i - 1}`;
+    } return `wrong-answer-${i}`;
+  }
+
   render() {
     const { trivia, index } = this.state;
     return (
@@ -34,12 +64,14 @@ class Game extends React.Component {
         <h1>Game</h1>
         { trivia.length !== 0 && (
           <div>
-            <p data-testid="question-text">trivia[index].question</p>
+            <p data-testid="question-text">{ trivia[index].question }</p>
             <p data-testid="question-category">
               {trivia[index].category}
             </p>
+            <div data-testid="answer-options">
+              { this.answers() }
+            </div>
           </div>
-
         ) }
 
       </div>
@@ -48,8 +80,8 @@ class Game extends React.Component {
   }
 }
 Game.propTypes = {
-  history: PropTypes.arrayOf(
-    PropTypes.string,
-  ).isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
 };
 export default Game;
