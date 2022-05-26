@@ -43,6 +43,14 @@ body {
   color: #61dafb;
 }
 
+.correct-btn {
+  border: 3px solid rgb(6, 240, 15);
+}
+
+.incorrect-btn {
+  border: 3px solid red;
+}
+
 @keyframes shake {
 
   10%, 90% {
