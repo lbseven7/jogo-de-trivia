@@ -47,10 +47,10 @@ class Game extends React.Component {
     );
   }
 
-  dataTestAnswer(i, correct) {
-    if (i === correct) {
+  dataTestAnswer(index, correct) {
+    if (index === correct) {
       return 'correct-answer';
-    } if (i > correct) {
+    } if (index > correct) {
       return `wrong-answer-${i - 1}`;
     } return `wrong-answer-${i}`;
   }
