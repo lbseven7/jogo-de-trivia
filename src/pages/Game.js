@@ -11,9 +11,9 @@ class Game extends React.Component {
       trivia: [],
       index: 0,
       answeredQuestion: false,
-      timer: 30,
-      random: false;
-      randomPosition,
+      timer: 3,
+      random: false,
+      randomPosition: '',
     };
   }
 
@@ -32,25 +32,27 @@ class Game extends React.Component {
       this.setState({ trivia: API_ASK.results });
     }
     this.setTimer();
-    this.randomPosition()
+    this.randomPosition();
   }
 
   setTimer = () => {
     const { timer } = this.state;
     const oneSecond = 1000;
-    const myInterval = setInterval(() => {
+    const id = setInterval(() => {
       this.setState((prevState) => ({
         timer: prevState.timer - 1,
-      }), (myInterval) => if (timer === 0) clearInterval(myInterval));
+      }));
     }, oneSecond);
+    console.log(timer);
+    if (timer < 0) clearInterval(id);
   }
 
   randomPosition = () => {
-    const { random, trivia } = this.state
-    if (!random && trivia.lenght > 0) {
+    const { random, trivia, index } = this.state;
+    if (!random && trivia.length > 0) {
       const max = trivia[index].incorrect_answers.length;
       const randomPosition = Math.floor(Math.random() * (max - 0 + 1) + 0);
-      this.setState({ randomPosition })
+      this.setState({ randomPosition });
     }
   }
 
