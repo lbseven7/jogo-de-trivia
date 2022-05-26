@@ -2,13 +2,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import getAsk from '../services/getAsk';
 import Header from '../component/Header';
+import '../App.css';
 
 class Game extends React.Component {
   constructor() {
     super();
     this.state = {
       trivia: [],
-      index: 0,
+      currentQuestion: 0,
+      disabledQuestion: false,
+      timer: 30,
+      correctAnswersIndex: [],
+      allAnswers: [],
     };
   }
 
@@ -26,52 +31,97 @@ class Game extends React.Component {
     if (API_ASK.response_code === tokenValid) {
       this.setState({ trivia: API_ASK.results });
     }
+    this.setTimer();
+    this.setAnswers();
   }
 
-  answers() {
-    const { trivia, index } = this.state;
-    const max = trivia[index].incorrect_answers.length;
-    console.log(trivia[index].incorrect_answers);
-    console.log(max);
-    const correct = Math.floor(Math.random() * (max - 0 + 1) + 0);
-    const answers = trivia[index].incorrect_answers;
-    answers.splice(correct, 0, trivia[index].correct_answer);
-    console.log(answers);
+  setTimer = () => {
+    const { timer } = this.state;
+    const oneSecond = 1000;
+    let counter = timer;
+    const intervalId = setInterval(() => {
+      this.setState((prevState) => ({
+        timer: prevState.timer - 1,
+      }));
+      counter -= 1;
+      if (counter === 0) {
+        clearInterval(intervalId);
+        this.setState({ disabledQuestion: true });
+      }
+    }, oneSecond);
+  }
+
+  setAnswers = () => {
+    const { trivia } = this.state;
+    const correctAnswersIndex = [];
+    trivia.forEach((question) => {
+      const max = question.incorrect_answers.length;
+      const random = Math.floor(Math.random() * (max - 0 + 1) + 0);
+      correctAnswersIndex.push(random);
+    });
+
+    const allAnswers = [];
+    trivia.forEach((question, index) => {
+      const wrongAnswers = question.incorrect_answers;
+      wrongAnswers.splice(correctAnswersIndex[index], 0, question.correct_answer);
+      allAnswers.push(wrongAnswers);
+    });
+    this.setState({ correctAnswersIndex, allAnswers });
+  }
+
+  renderAnswers = () => {
+    const {
+      correctAnswersIndex,
+      allAnswers,
+      currentQuestion,
+      disabledQuestion,
+    } = this.state;
+    const correct = correctAnswersIndex[currentQuestion];
     return (
-      answers.map((answer, i) => (
-        <button
-          key={ i }
-          type="button"
-          data-testid={ this.dataTestAnswer(i, correct) }
-        >
-          { answer }
-        </button>
-      ))
+      allAnswers[currentQuestion]
+        .map((answer, ind) => (
+          <button
+            key={ ind }
+            type="button"
+            data-testid={ this.dataTestAnswer(ind, correct) }
+            className={ this.btnStyle(ind, correct) }
+            onClick={ () => this.setState({ disabledQuestion: true }) }
+            disabled={ disabledQuestion }
+          >
+            { answer }
+          </button>
+        ))
     );
   }
 
-  dataTestAnswer(i, correct) {
-    if (i === correct) {
+  dataTestAnswer = (index, correct) => {
+    if (index === correct) {
       return 'correct-answer';
-    } if (i > correct) {
-      return `wrong-answer-${i - 1}`;
-    } return `wrong-answer-${i}`;
+    } if (index > correct) {
+      return `wrong-answer-${index - 1}`;
+    } return `wrong-answer-${index}`;
+  }
+
+  btnStyle = (index, correct) => {
+    const { disabledQuestion } = this.state;
+    if (disabledQuestion && index === correct) return 'correct-btn';
+    if (disabledQuestion && index !== correct) return 'incorrect-btn';
   }
 
   render() {
-    const { trivia, index } = this.state;
+    const { trivia, currentQuestion, timer, correctAnswersIndex } = this.state;
     return (
       <div>
         <Header />
-        <h1>Game</h1>
-        { trivia.length !== 0 && (
+        <p>{ timer }</p>
+        { correctAnswersIndex.length !== 0 && (
           <div>
-            <p data-testid="question-text">{ trivia[index].question }</p>
+            <p data-testid="question-text">{ trivia[currentQuestion].question }</p>
             <p data-testid="question-category">
-              {trivia[index].category}
+              {trivia[currentQuestion].category}
             </p>
             <div data-testid="answer-options">
-              { this.answers() }
+              { this.renderAnswers() }
             </div>
           </div>
         ) }
