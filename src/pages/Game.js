@@ -1,7 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import getAsk from '../services/getAsk';
 import Header from '../component/Header';
+import { updateScore } from '../redux/actions';
 import '../App.css';
 
 class Game extends React.Component {
@@ -14,6 +16,7 @@ class Game extends React.Component {
       timer: 30,
       correctAnswersIndex: [],
       allAnswers: [],
+      score: 0,
     };
   }
 
@@ -33,6 +36,26 @@ class Game extends React.Component {
     }
     this.setTimer();
     this.setAnswers();
+  }
+
+  answerClick = ({ target }) => {
+    this.setState({ disabledQuestion: true }, this.calculateScore(target));
+  }
+
+  calculateScore = ({ dataset: { testid } }) => {
+    if (testid !== 'correct-answer') return;
+    const { trivia, currentQuestion, timer, score } = this.state;
+    const question = trivia[currentQuestion];
+    const difficulty = ['easy', 'medium', 'hard'];
+    const difficultyMultiplier = difficulty.indexOf(question.difficulty) + 1;
+    const basePoints = 10;
+    const newScore = score + basePoints + (timer * difficultyMultiplier);
+    this.setState({ score: newScore }, () => this.dispatchScore(newScore));
+  }
+
+  dispatchScore = (newScore) => {
+    const { dispatch } = this.props;
+    dispatch(updateScore(newScore));
   }
 
   setTimer = () => {
@@ -85,7 +108,7 @@ class Game extends React.Component {
             type="button"
             data-testid={ this.dataTestAnswer(ind, correct) }
             className={ this.btnStyle(ind, correct) }
-            onClick={ () => this.setState({ disabledQuestion: true }) }
+            onClick={ this.answerClick }
             disabled={ disabledQuestion }
           >
             { answer }
@@ -129,9 +152,12 @@ class Game extends React.Component {
     );
   }
 }
+
+export default connect()(Game);
+
 Game.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
-export default Game;
