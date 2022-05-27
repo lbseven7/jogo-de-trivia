@@ -17,6 +17,7 @@ class Game extends React.Component {
       correctAnswersIndex: [],
       allAnswers: [],
       score: 0,
+      showNext: false,
     };
   }
 
@@ -38,8 +39,20 @@ class Game extends React.Component {
     this.setAnswers();
   }
 
+  nextClick = () => {
+    this.setState((prevState) => ({
+      currentQuestion: prevState.currentQuestion + 1,
+      disabledQuestion: false,
+      timer: 30,
+      showNext: false,
+    }));
+  }
+
   answerClick = ({ target }) => {
-    this.setState({ disabledQuestion: true }, this.calculateScore(target));
+    this.setState({
+      disabledQuestion: true,
+      showNext: true,
+    }, this.calculateScore(target));
   }
 
   calculateScore = ({ dataset: { testid } }) => {
@@ -65,7 +78,10 @@ class Game extends React.Component {
       counter -= 1;
       if (counter === 0) {
         clearInterval(intervalId);
-        this.setState({ disabledQuestion: true });
+        this.setState({
+          disabledQuestion: true,
+          showNext: true,
+        });
       }
     }, oneSecond);
   }
@@ -128,7 +144,7 @@ class Game extends React.Component {
   }
 
   render() {
-    const { trivia, currentQuestion, timer, correctAnswersIndex } = this.state;
+    const { trivia, currentQuestion, timer, correctAnswersIndex, showNext } = this.state;
     return (
       <div>
         <Header />
@@ -144,6 +160,15 @@ class Game extends React.Component {
             </div>
           </div>
         ) }
+        { showNext && (
+          <button
+            type="button"
+            data-testid="btn-next"
+            onClick={ this.nextClick }
+          >
+            Next
+          </button>
+        )}
       </div>
     );
   }
