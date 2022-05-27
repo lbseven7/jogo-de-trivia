@@ -7,3 +7,8 @@ export const addUser = (user) => ({
   type: 'ADD_USER',
   payload: user,
 });
+
+export const updateScore = (score) => ({
+  type: 'UPDATE_SCORE',
+  payload: score,
+});

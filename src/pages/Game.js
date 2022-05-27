@@ -1,7 +1,9 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import getAsk from '../services/getAsk';
 import Header from '../component/Header';
+import { updateScore } from '../redux/actions';
 import '../App.css';
 
 class Game extends React.Component {
@@ -14,16 +16,12 @@ class Game extends React.Component {
       timer: 30,
       correctAnswersIndex: [],
       allAnswers: [],
+      score: 0,
+      showNext: false,
     };
   }
 
   async componentDidMount() {
-    await this.getTrivia();
-    this.setTimer();
-    this.setAnswers();
-  }
-
-  getTrivia = async () => {
     const { history } = this.props;
     const token = localStorage.getItem('token');
     if (token === null) history.push('/');
@@ -37,6 +35,36 @@ class Game extends React.Component {
     if (API_ASK.response_code === tokenValid) {
       this.setState({ trivia: API_ASK.results });
     }
+    this.setTimer();
+    this.setAnswers();
+  }
+
+  nextClick = () => {
+    this.setState((prevState) => ({
+      currentQuestion: prevState.currentQuestion + 1,
+      disabledQuestion: false,
+      timer: 30,
+      showNext: false,
+    }));
+  }
+
+  answerClick = ({ target }) => {
+    this.setState({
+      disabledQuestion: true,
+      showNext: true,
+    }, this.calculateScore(target));
+  }
+
+  calculateScore = ({ dataset: { testid } }) => {
+    if (testid !== 'correct-answer') return;
+    const { trivia, currentQuestion, timer, score } = this.state;
+    const question = trivia[currentQuestion];
+    const difficulty = ['easy', 'medium', 'hard'];
+    const difficultyMultiplier = difficulty.indexOf(question.difficulty) + 1;
+    const basePoints = 10;
+    const newScore = score + basePoints + (timer * difficultyMultiplier);
+    const { dispatch } = this.props;
+    this.setState({ score: newScore }, () => dispatch(updateScore(newScore)));
   }
 
   setTimer = () => {
@@ -50,7 +78,10 @@ class Game extends React.Component {
       counter -= 1;
       if (counter === 0) {
         clearInterval(intervalId);
-        this.setState({ disabledQuestion: true });
+        this.setState({
+          disabledQuestion: true,
+          showNext: true,
+        });
       }
     }, oneSecond);
   }
@@ -70,7 +101,6 @@ class Game extends React.Component {
       wrongAnswers.splice(correctAnswersIndex[index], 0, question.correct_answer);
       allAnswers.push(wrongAnswers);
     });
-
     this.setState({ correctAnswersIndex, allAnswers });
   }
 
@@ -90,7 +120,7 @@ class Game extends React.Component {
             type="button"
             data-testid={ this.dataTestAnswer(ind, correct) }
             className={ this.btnStyle(ind, correct) }
-            onClick={ () => this.setState({ disabledQuestion: true }) }
+            onClick={ this.answerClick }
             disabled={ disabledQuestion }
           >
             { answer }
@@ -114,12 +144,12 @@ class Game extends React.Component {
   }
 
   render() {
-    const { trivia, currentQuestion, timer, allAnswers } = this.state;
+    const { trivia, currentQuestion, timer, correctAnswersIndex, showNext } = this.state;
     return (
       <div>
         <Header />
         <p>{ timer }</p>
-        { allAnswers.length !== 0 && (
+        { correctAnswersIndex.length !== 0 && (
           <div>
             <p data-testid="question-text">{ trivia[currentQuestion].question }</p>
             <p data-testid="question-category">
@@ -130,13 +160,25 @@ class Game extends React.Component {
             </div>
           </div>
         ) }
+        { showNext && (
+          <button
+            type="button"
+            data-testid="btn-next"
+            onClick={ this.nextClick }
+          >
+            Next
+          </button>
+        )}
       </div>
     );
   }
 }
+
+export default connect()(Game);
+
 Game.propTypes = {
   history: PropTypes.shape({
     push: PropTypes.func,
   }).isRequired,
+  dispatch: PropTypes.func.isRequired,
 };
-export default Game;
