@@ -22,12 +22,6 @@ class Game extends React.Component {
   }
 
   async componentDidMount() {
-    await this.getTrivia();
-    this.setTimer();
-    this.setAnswers();
-  }
-
-  getTrivia = async () => {
     const { history } = this.props;
     const token = localStorage.getItem('token');
     if (token === null) history.push('/');
@@ -41,6 +35,8 @@ class Game extends React.Component {
     if (API_ASK.response_code === tokenValid) {
       this.setState({ trivia: API_ASK.results });
     }
+    this.setTimer();
+    this.setAnswers();
   }
 
   nextClick = () => {
@@ -105,7 +101,6 @@ class Game extends React.Component {
       wrongAnswers.splice(correctAnswersIndex[index], 0, question.correct_answer);
       allAnswers.push(wrongAnswers);
     });
-
     this.setState({ correctAnswersIndex, allAnswers });
   }
 
@@ -154,7 +149,7 @@ class Game extends React.Component {
       <div>
         <Header />
         <p>{ timer }</p>
-        { allAnswers.length !== 0 && (
+        { correctAnswersIndex.length !== 0 && (
           <div>
             <p data-testid="question-text">{ trivia[currentQuestion].question }</p>
             <p data-testid="question-category">
