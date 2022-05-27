@@ -1,9 +1,8 @@
 const INITIAL_STATE = {
   name: '',
-  assertions: '',
+  assertions: 0,
   score: 0,
   gravatarEmail: '',
-  quantifyAnswer: 0,
 };
 
 const playerReducer = (state = INITIAL_STATE, action) => {

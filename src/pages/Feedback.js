@@ -5,29 +5,34 @@ import Header from '../component/Header';
 
 class Feedback extends React.Component {
   showMessage = () => {
-    const { answer } = this.props;
+    const { assertions } = this.props;
     const number = 3;
-    if (answer < number) {
+    if (assertions < number) {
       return 'Could be better...';
     }
     return 'Well Done!';
   }
 
   render() {
+    const { assertions, score } = this.props;
     return (
       <div>
         <Header />
         <p data-testid="feedback-text">{this.showMessage()}</p>
+        <p data-testid="feedback-total-question">{assertions}</p>
+        <p data-testid="feedback-total-score">{score}</p>
       </div>
 
     );
   }
 }
 const mapStateToProps = (state) => ({
-  answer: state.player.quantifyAnswer,
+  assertions: state.player.assertions,
+  score: state.player.score,
 });
 Feedback.propTypes = {
-  answer: PropTypes.number,
+  assertions: PropTypes.number,
+  score: PropTypes.number,
 }.isRequired;
 
 export default connect(mapStateToProps)(Feedback);
