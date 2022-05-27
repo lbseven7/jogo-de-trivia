@@ -3,6 +3,7 @@ const INITIAL_STATE = {
   assertions: '',
   score: 0,
   gravatarEmail: '',
+  quantifyAnswer: 0,
 };
 
 const playerReducer = (state = INITIAL_STATE, action) => {
@@ -10,7 +11,7 @@ const playerReducer = (state = INITIAL_STATE, action) => {
   case 'ADD_USER':
     return { ...state, ...action.payload };
   case 'UPDATE_SCORE':
-    return { ...state, score: action.payload };
+    return { ...state, ...action.payload };
   default:
     return state;
   }

@@ -8,7 +8,10 @@ export const addUser = (user) => ({
   payload: user,
 });
 
-export const updateScore = (score) => ({
+export const updateScore = (score, quantifyAnswer) => ({
   type: 'UPDATE_SCORE',
-  payload: score,
+  payload: {
+    score,
+    quantifyAnswer,
+  },
 });
