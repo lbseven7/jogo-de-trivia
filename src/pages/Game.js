@@ -50,12 +50,8 @@ class Game extends React.Component {
     const difficultyMultiplier = difficulty.indexOf(question.difficulty) + 1;
     const basePoints = 10;
     const newScore = score + basePoints + (timer * difficultyMultiplier);
-    this.setState({ score: newScore }, () => this.dispatchScore(newScore));
-  }
-
-  dispatchScore = (newScore) => {
     const { dispatch } = this.props;
-    dispatch(updateScore(newScore));
+    this.setState({ score: newScore }, () => dispatch(updateScore(newScore)));
   }
 
   setTimer = () => {
