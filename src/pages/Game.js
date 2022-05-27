@@ -17,11 +17,17 @@ class Game extends React.Component {
       correctAnswersIndex: [],
       allAnswers: [],
       score: 0,
-      showNext: false,
+      setIntervalId: 0,
     };
   }
 
   async componentDidMount() {
+    await this.getTrivia();
+    this.setTimer();
+    this.setAnswers();
+  }
+
+  getTrivia = async () => {
     const { history } = this.props;
     const token = localStorage.getItem('token');
     if (token === null) history.push('/');
@@ -35,55 +41,25 @@ class Game extends React.Component {
     if (API_ASK.response_code === tokenValid) {
       this.setState({ trivia: API_ASK.results });
     }
-    this.setTimer();
-    this.setAnswers();
-  }
-
-  nextClick = () => {
-    this.setState((prevState) => ({
-      currentQuestion: prevState.currentQuestion + 1,
-      disabledQuestion: false,
-      timer: 30,
-      showNext: false,
-    }));
-  }
-
-  answerClick = ({ target }) => {
-    this.setState({
-      disabledQuestion: true,
-      showNext: true,
-    }, this.calculateScore(target));
-  }
-
-  calculateScore = ({ dataset: { testid } }) => {
-    if (testid !== 'correct-answer') return;
-    const { trivia, currentQuestion, timer, score } = this.state;
-    const question = trivia[currentQuestion];
-    const difficulty = ['easy', 'medium', 'hard'];
-    const difficultyMultiplier = difficulty.indexOf(question.difficulty) + 1;
-    const basePoints = 10;
-    const newScore = score + basePoints + (timer * difficultyMultiplier);
-    const { dispatch } = this.props;
-    this.setState({ score: newScore }, () => dispatch(updateScore(newScore)));
   }
 
   setTimer = () => {
     const { timer } = this.state;
     const oneSecond = 1000;
     let counter = timer;
-    const intervalId = setInterval(() => {
+    const setIntervalId = setInterval(() => {
       this.setState((prevState) => ({
         timer: prevState.timer - 1,
       }));
       counter -= 1;
       if (counter === 0) {
-        clearInterval(intervalId);
+        clearInterval(setIntervalId);
         this.setState({
           disabledQuestion: true,
-          showNext: true,
         });
       }
     }, oneSecond);
+    this.setState({ setIntervalId });
   }
 
   setAnswers = () => {
@@ -119,7 +95,7 @@ class Game extends React.Component {
             key={ ind }
             type="button"
             data-testid={ this.dataTestAnswer(ind, correct) }
-            className={ this.btnStyle(ind, correct) }
+            className={ this.btnAnswerStyle(ind, correct) }
             onClick={ this.answerClick }
             disabled={ disabledQuestion }
           >
@@ -137,14 +113,53 @@ class Game extends React.Component {
     } return `wrong-answer-${index}`;
   }
 
-  btnStyle = (index, correct) => {
+  btnAnswerStyle = (index, correct) => {
     const { disabledQuestion } = this.state;
     if (disabledQuestion && index === correct) return 'correct-btn';
     if (disabledQuestion && index !== correct) return 'incorrect-btn';
   }
 
+  answerClick = ({ target }) => {
+    const { setIntervalId } = this.state;
+    clearInterval(setIntervalId);
+    this.setState({
+      disabledQuestion: true,
+    }, this.calculateScore(target));
+  }
+
+  calculateScore = ({ dataset: { testid } }) => {
+    if (testid !== 'correct-answer') return;
+    const { trivia, currentQuestion, timer, score } = this.state;
+    const question = trivia[currentQuestion];
+    const difficulty = ['easy', 'medium', 'hard'];
+    const difficultyMultiplier = difficulty.indexOf(question.difficulty) + 1;
+    const basePoints = 10;
+    const newScore = score + basePoints + (timer * difficultyMultiplier);
+    const { dispatch } = this.props;
+    this.setState({ score: newScore }, () => dispatch(updateScore(newScore)));
+  }
+
+  nextClick = () => {
+    const { currentQuestion } = this.state;
+    const { history } = this.props;
+    const finalQuestion = 4;
+    if (currentQuestion === finalQuestion) history.push('/feedback');
+    this.setState((prevState) => ({
+      currentQuestion: prevState.currentQuestion + 1,
+      disabledQuestion: false,
+      timer: 30,
+    }));
+    this.setTimer();
+  }
+
   render() {
-    const { trivia, currentQuestion, timer, correctAnswersIndex, showNext } = this.state;
+    const {
+      trivia,
+      currentQuestion,
+      timer,
+      correctAnswersIndex,
+      disabledQuestion,
+    } = this.state;
     return (
       <div>
         <Header />
@@ -160,7 +175,7 @@ class Game extends React.Component {
             </div>
           </div>
         ) }
-        { showNext && (
+        { disabledQuestion && (
           <button
             type="button"
             data-testid="btn-next"
