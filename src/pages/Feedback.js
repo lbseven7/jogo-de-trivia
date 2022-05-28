@@ -44,6 +44,7 @@ const mapStateToProps = (state) => ({
   assertions: state.player.assertions,
   score: state.player.score,
 });
+
 Feedback.propTypes = {
   assertions: PropTypes.number,
   score: PropTypes.number,
