@@ -47,6 +47,7 @@ describe('1) Tests Login Page:', () => {
     const game = await screen.findByRole('img', {  name: /gravatar/i})
     expect(game).toBeInTheDocument();
     expect(history.location.pathname).toBe('/game');
+    expect(screen.getByText('Rafael')).toBeInTheDocument()
     debug()
   });
 });
