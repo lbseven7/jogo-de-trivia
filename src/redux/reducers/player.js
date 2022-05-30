@@ -11,6 +11,8 @@ const playerReducer = (state = INITIAL_STATE, action) => {
     return { ...state, ...action.payload };
   case 'UPDATE_SCORE':
     return { ...state, ...action.payload };
+  case 'RESET_STATE':
+    return { ...INITIAL_STATE };
   default:
     return state;
   }

@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import md5 from 'crypto-js/md5';
+import { resetState } from '../redux/actions/index';
 
 class Ranking extends React.Component {
   constructor() {
@@ -15,6 +16,12 @@ class Ranking extends React.Component {
   componentDidMount() {
     this.rankingSetup();
   }
+
+  homeClick = () => {
+    const { dispatch, history } = this.props;
+    dispatch(resetState());
+    history.push('/');
+  };
 
   gravatarImg = (email) => {
     const hash = md5(email).toString();
@@ -50,7 +57,6 @@ class Ranking extends React.Component {
   }
 
   render() {
-    const { history } = this.props;
     const { rankingList } = this.state;
     console.log(rankingList);
     return (
@@ -59,14 +65,14 @@ class Ranking extends React.Component {
         <button
           type="button"
           data-testid="btn-go-home"
-          onClick={ () => history.push('/') }
+          onClick={ this.homeClick }
         >
           Home
         </button>
         <div />
         <div>
           {rankingList.map(({ name, score, picture, index }) => (
-            <div key={ index }>
+            <div key={ index + 1 }>
               <img src={ picture } alt={ name } />
               <p data-testid={ `player-name-${index}` }>{name}</p>
               <p data-testid={ `player-score-${index}` }>{score}</p>
