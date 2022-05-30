@@ -39,16 +39,18 @@ describe('1) Tests Game Page:', () => {
     expect(timer).toBeInTheDocument();
   });
 
-  it('directs to home if token is incorrect', () => {
+  it('directs to home if token is incorrect', async () => {
+    localStorage.setItem('token', 'correctToken')
     jest.spyOn(global, 'fetch').mockResolvedValue({
       json: jest.fn().mockResolvedValue(incorrectToken)
     });
-    const { history } = renderWithRouterAndRedux(<App />, INITIAL_STATE, '/game');
-    
-
+    const { history, debug } = renderWithRouterAndRedux(<App />, INITIAL_STATE, '/game');
+    const btnLogin = await screen.findByRole('button', { name: /play/i });
+    expect(btnLogin).toBeInTheDocument();
   });
 
   it('renders next button', async () => {
+    localStorage.setItem('token', 'correctToken')
     jest.spyOn(global, 'fetch').mockResolvedValue({
       json: jest.fn().mockResolvedValue(correctToken)
     });
@@ -61,6 +63,7 @@ describe('1) Tests Game Page:', () => {
   });
 
   it('after last question pushes to feedback page', async () => {
+    localStorage.setItem('token', 'correctToken')
     jest.spyOn(global, 'fetch').mockResolvedValue({
       json: jest.fn().mockResolvedValue(correctToken)
     });
@@ -97,6 +100,7 @@ describe('1) Tests Game Page:', () => {
   })
 
   it('after last question pushes to feedback page', async () => {
+    localStorage.setItem('token', 'correctToken')
     jest.spyOn(global, 'fetch').mockResolvedValue({
       json: jest.fn().mockResolvedValue(correctToken)
     });
@@ -110,6 +114,7 @@ describe('1) Tests Game Page:', () => {
   })
 
   it('next button is on screen after 40 seconds', async () => {
+    localStorage.setItem('token', 'correctToken')
     jest.useFakeTimers();
     jest.spyOn(global, 'fetch').mockResolvedValue({
       json: jest.fn().mockResolvedValue(correctToken)
@@ -123,6 +128,7 @@ describe('1) Tests Game Page:', () => {
   });
 
   it('timer is 29 after one second', async () => {
+    localStorage.setItem('token', 'correctToken')
     jest.useFakeTimers();
     jest.spyOn(global, 'fetch').mockResolvedValue({
       json: jest.fn().mockResolvedValue(correctToken)
