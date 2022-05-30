@@ -15,3 +15,8 @@ export const updateScore = (score, assertions) => ({
     assertions,
   },
 });
+
+export const resetState = () => ({
+  type: 'RESET_STATE',
+  payload: {},
+});
