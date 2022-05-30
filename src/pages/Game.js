@@ -24,23 +24,28 @@ class Game extends React.Component {
 
   async componentDidMount() {
     await this.getTrivia();
-    this.setTimer();
-    this.setAnswers();
+  }
+
+  componentWillUnmount() {
+    const { setIntervalId } = this.state;
+    clearInterval(setIntervalId);
   }
 
   getTrivia = async () => {
     const { history } = this.props;
     const token = localStorage.getItem('token');
-    if (token === null) history.push('/');
+    if (token === null) return history.push('/');
     const API_ASK = await getAsk(token);
     const tokenInvalid = 3;
     if (API_ASK.response_code === tokenInvalid) {
       localStorage.removeItem('token');
-      history.push('/');
+      return history.push('/');
     }
     const tokenValid = 0;
     if (API_ASK.response_code === tokenValid) {
       this.setState({ trivia: API_ASK.results });
+      this.setTimer();
+      this.setAnswers();
     }
   }
 
@@ -74,7 +79,7 @@ class Game extends React.Component {
 
     const allAnswers = [];
     trivia.forEach((question, index) => {
-      const wrongAnswers = question.incorrect_answers;
+      const wrongAnswers = [...question.incorrect_answers];
       wrongAnswers.splice(correctAnswersIndex[index], 0, question.correct_answer);
       allAnswers.push(wrongAnswers);
     });
@@ -147,7 +152,7 @@ class Game extends React.Component {
     const { currentQuestion } = this.state;
     const { history } = this.props;
     const finalQuestion = 4;
-    if (currentQuestion === finalQuestion) history.push('/feedback');
+    if (currentQuestion === finalQuestion) return history.push('/feedback');
     this.setState((prevState) => ({
       currentQuestion: prevState.currentQuestion + 1,
       disabledQuestion: false,
