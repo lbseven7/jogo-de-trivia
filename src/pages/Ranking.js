@@ -71,11 +71,11 @@ class Ranking extends React.Component {
         </button>
         <div />
         <div>
-          {rankingList.map(({ name, score, picture, index }) => (
+          {rankingList.map(({ name, score, picture }, index) => (
             <div key={ index + 1 }>
               <img src={ picture } alt={ name } />
-              <p data-testid={ `player-name-${index}` }>{name}</p>
-              <p data-testid={ `player-score-${index}` }>{score}</p>
+              <p data-testid={ `player-name-${index + 1}` }>{name}</p>
+              <p data-testid={ `player-score-${index + 1}` }>{score}</p>
             </div>
           ))}
         </div>
