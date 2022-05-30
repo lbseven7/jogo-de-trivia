@@ -12,14 +12,9 @@ const INITIAL_STATE = { player: {
   gravatarEmail: 'rafael@teste.com.br',
 }}
 
-describe('1) Tests Game Page:', () => {
-  afterEach(() => jest.clearAllMocks());
-  it('render game without local storage pushes to home', async () => {
-    localStorage.removeItem('token');
-    const { history } = renderWithRouterAndRedux(<App />, INITIAL_STATE, '/game');
-    expect(history.location.pathname).toBe('/');
-  });
+afterEach(() => jest.clearAllMocks());
 
+describe('1) Tests Game Page:', () => {
   it('renders all correct buttons, question and answers', async () => {
     localStorage.setItem('token', 'correctToken')
     jest.spyOn(global, 'fetch').mockResolvedValue({
@@ -37,6 +32,12 @@ describe('1) Tests Game Page:', () => {
     expect(correctAnswer).toBeInTheDocument();
     expect(incorrectAnswer).toBeInTheDocument();
     expect(timer).toBeInTheDocument();
+  });
+
+  it('redirects to home if local storage is empty', async () => {
+    localStorage.removeItem('token');
+    const { history } = renderWithRouterAndRedux(<App />, INITIAL_STATE, '/game');
+    expect(history.location.pathname).toBe('/');
   });
 
   it('directs to home if token is incorrect', async () => {
@@ -99,7 +100,7 @@ describe('1) Tests Game Page:', () => {
   
   })
 
-  it('after last question pushes to feedback page', async () => {
+  it('render 70 score after first correct answer', async () => {
     localStorage.setItem('token', 'correctToken')
     jest.spyOn(global, 'fetch').mockResolvedValue({
       json: jest.fn().mockResolvedValue(correctToken)
@@ -112,20 +113,6 @@ describe('1) Tests Game Page:', () => {
     const score = await screen.findByTestId('header-score')
     expect(score).toHaveTextContent('70')  
   })
-
-  it('next button is on screen after 40 seconds', async () => {
-    localStorage.setItem('token', 'correctToken')
-    jest.useFakeTimers();
-    jest.spyOn(global, 'fetch').mockResolvedValue({
-      json: jest.fn().mockResolvedValue(correctToken)
-    });
-    const { debug } = renderWithRouterAndRedux(<App />, INITIAL_STATE, '/game');
-    
-    const firstQuestion = await screen.findByText(/What is the name of the capital of Turkey/i)    
-    jest.advanceTimersByTime(30000);
-    const btnNext = screen.getByRole('button', { name: /next/i})
-    expect(btnNext).toBeInTheDocument();
-  });
 
   it('timer is 29 after one second', async () => {
     localStorage.setItem('token', 'correctToken')
@@ -141,4 +128,20 @@ describe('1) Tests Game Page:', () => {
     expect(firstQuestion).toBeInTheDocument();
     expect(timer).toBeInTheDocument();
   });
+
+  it('next button is on screen after 40 seconds', async () => {
+    localStorage.setItem('token', 'correctToken')
+    jest.useFakeTimers();
+    jest.spyOn(global, 'fetch').mockResolvedValue({
+      json: jest.fn().mockResolvedValue(correctToken)
+    });
+    renderWithRouterAndRedux(<App />, INITIAL_STATE, '/game');
+    
+    const firstQuestion = await screen.findByText(/What is the name of the capital of Turkey/i)    
+    jest.advanceTimersByTime(30000);
+    const btnNext = screen.getByRole('button', { name: /next/i})
+    expect(btnNext).toBeInTheDocument();
+  });
+
+
 });
