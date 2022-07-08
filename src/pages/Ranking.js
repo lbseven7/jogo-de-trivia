@@ -70,7 +70,7 @@ class Ranking extends React.Component {
           Home
         </button>
         <div />
-        <div>
+        <div className="ranking">
           {rankingList.map(({ name, score, picture }, index) => (
             <div key={ index + 1 }>
               <img src={ picture } alt={ name } />

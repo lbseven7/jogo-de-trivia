@@ -98,6 +98,7 @@ class Game extends React.Component {
       allAnswers[currentQuestion]
         .map((answer, ind) => (
           <button
+            id="btn-answer"
             key={ ind }
             type="button"
             data-testid={ this.dataTestAnswer(ind, correct) }
@@ -172,9 +173,9 @@ class Game extends React.Component {
     return (
       <div>
         <Header />
-        <p>{ timer }</p>
+        <p id="timer">{ timer }</p>
         { correctAnswersIndex.length !== 0 && (
-          <div>
+          <div className="current-question">
             <p data-testid="question-text">{ trivia[currentQuestion].question }</p>
             <p data-testid="question-category">
               {trivia[currentQuestion].category}
@@ -186,6 +187,7 @@ class Game extends React.Component {
         ) }
         { disabledQuestion && (
           <button
+            className="btn-game"
             type="button"
             data-testid="btn-next"
             onClick={ this.nextClick }

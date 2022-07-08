@@ -39,7 +39,7 @@ class Login extends React.Component {
   render() {
     const { name, gravatarEmail } = this.state;
     return (
-      <form>
+      <form className="login-form">
         <input
           placeholder="nome"
           type="text"
@@ -57,6 +57,7 @@ class Login extends React.Component {
           onChange={ this.handleChange }
         />
         <button
+          className="btn-play"
           type="button"
           data-testid="btn-play"
           disabled={ this.loginBtnEnabled() }
@@ -65,6 +66,7 @@ class Login extends React.Component {
           Play
         </button>
         <button
+          className="btn-settings"
           type="button"
           data-testid="btn-settings"
           onClick={ this.settingsBtnClick }
